@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { useCallback, useState } from "react";
+import { Outlet } from "react-router-dom";
+import MainNavigation from "./shared/Components/Navigation/MainNavigation";
+import { AuthContext } from "./shared/context/auth-context";
+
+import "./App.css";
 
 function App() {
+  const [isLoggedIn, SetIsLoggedIn] = useState(false);
+
+  const login = useCallback(() => {
+    SetIsLoggedIn(true);
+  }, []);
+
+  const logout = useCallback(() => {
+    SetIsLoggedIn(false);
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App"> 
+      <AuthContext.Provider
+        value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+      >
+        <MainNavigation />
+        <main>
+          <Outlet />
+        </main>
+      </AuthContext.Provider>
     </div>
   );
 }

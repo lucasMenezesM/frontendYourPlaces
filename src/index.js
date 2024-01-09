@@ -1,13 +1,60 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { useContext } from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import Users from "./user/pages/Users";
+import NewPlace from "./places/pages/NewPlace";
+import Error from "./error/pages/Error";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+import UserPlaces from "./places/pages/UserPlaces";
+import UpdatePlace from "./places/pages/UpdatePlace";
+import Auth from "./user/pages/Auth";
+import { AuthContext } from "./shared/context/auth-context";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <Error />,
+    children: [
+      {
+        path: "/home",
+        element: <Users />,
+      },
+      {
+        path: "/",
+        element: <Navigate to={"/home"} />,
+      },
+      {
+        path: "places/new",
+        element: <NewPlace />,
+      },
+      {
+        path: "/auth",
+        element: <Auth />,
+      },
+      {
+        path: "/:userId/places",
+        element: <UserPlaces />,
+      },
+      {
+        path: "/places/:placeId",
+        element: <UpdatePlace />,
+      },
+    ],
+  },
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
