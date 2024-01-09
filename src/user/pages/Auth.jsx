@@ -2,11 +2,14 @@ import { useState, useContext } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { Form, Formik } from "formik";
+// import * as Yup from "yup";
 import * as Yup from "yup";
 import { AuthContext } from "../../shared/context/auth-context";
-import Input from "../../shared/Components/FormEelements/Input";
-import Button from "../../shared/Components/FormEelements/Button";
-import Card from "../../shared/Components/UIElements/Card";
+import Input from "../../shared/components/FormEelements/Input";
+// import Button from "../../shared/Components/FormEelements/Button";
+// import Card from "../../shared/Components/UIElements/Card";
+import Card from "../../shared/components/UIElements/Card";
+import Button from "../../shared/components/FormEelements/Button";
 
 import "./Auth.css";
 

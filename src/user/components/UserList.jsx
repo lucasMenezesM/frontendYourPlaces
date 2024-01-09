@@ -1,5 +1,5 @@
 import UserItem from "./UserItem";
-import Card from "../../shared/Components/UIElements/Card";
+import Card from "../../shared/components/UIElements/Card";
 import "./UsersList.css";
 
 export default function UserList({ users }) {

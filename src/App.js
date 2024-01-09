@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Outlet } from "react-router-dom";
-import MainNavigation from "./shared/Components/Navigation/MainNavigation";
+import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
 
 import "./App.css";
@@ -17,7 +17,7 @@ function App() {
   });
 
   return (
-    <div className="App"> 
+    <div className="App">
       <AuthContext.Provider
         value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
       >

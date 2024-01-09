@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
-import Input from "../../shared/Components/FormEelements/Input";
-import { useState } from "react";
-import Button from "../../shared/Components/FormEelements/Button";
-import Card from "../../shared/Components/UIElements/Card";
+import Input from "../../shared/components/FormEelements/Input";
+// import Button from "../../shared/Components/FormEelements/Button";
+import Button from "../../shared/components/FormEelements/Button";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 const DUMMY_PLACES = [

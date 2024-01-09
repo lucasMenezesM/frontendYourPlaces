@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Form, Formik } from "formik";
+// import * as Yup from "yup";
 import * as Yup from "yup";
-import Input from "../../shared/Components/FormEelements/Input";
-import Button from "../../shared/Components/FormEelements/Button";
+// import Input from "../../shared/components/FormEelements/Input.jsx";
+import Input from "../../shared/components/FormEelements/Input.jsx";
+import Button from "../../shared/components/FormEelements/Button";
 import "./NewPlace.css";
 
 // export default function NewPlaces() {

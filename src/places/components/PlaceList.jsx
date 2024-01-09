@@ -1,4 +1,5 @@
-import Card from "../../shared/Components/UIElements/Card";
+// import Card from "../../shared/Components/UIElements/Card";
+import Card from "../../shared/components/UIElements/Card";
 import PlaceItem from "./PlaceItem";
 
 import "./PlaceList.css";

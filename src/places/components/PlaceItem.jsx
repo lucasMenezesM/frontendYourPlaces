@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import { AuthContext } from "../../shared/context/auth-context";
-import Card from "../../shared/Components/UIElements/Card";
-import Button from "../../shared/Components/FormEelements/Button";
-import Modal from "../../shared/Components/UIElements/Modal";
+// import Card from "../../shared/components/UIElements/Card";
+import Card from "../../shared/components/UIElements/Card";
+import Button from "../../shared/components/FormEelements/Button";
+import Modal from "../../shared/components/UIElements/Modal";
 
 import "./PlaceItem.css";
 import { useState } from "react";
