@@ -7,19 +7,29 @@ import "./App.css";
 
 function App() {
   const [isLoggedIn, SetIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(null);
 
-  const login = useCallback(() => {
+  const login = useCallback((uid) => {
     SetIsLoggedIn(true);
+    setUserId(uid);
   }, []);
 
   const logout = useCallback(() => {
     SetIsLoggedIn(false);
+    setUserId(null);
   });
+
+  // console.log("Current id: " + userId);
 
   return (
     <div className="App">
       <AuthContext.Provider
-        value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+        value={{
+          isLoggedIn: isLoggedIn,
+          userId: userId,
+          login: login,
+          logout: logout,
+        }}
       >
         <MainNavigation />
         <main>

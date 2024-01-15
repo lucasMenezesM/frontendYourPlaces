@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "./NavLinks.css";
 
 export default function NavLinks() {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout, userId } = useContext(AuthContext);
   const navigate = useNavigate();
 
   function handleLogOut() {
@@ -22,7 +22,7 @@ export default function NavLinks() {
       {isLoggedIn && (
         <>
           <li>
-            <NavLink to={"/u1/places"}>MY PLACES</NavLink>
+            <NavLink to={`/${userId}/places`}>MY PLACES</NavLink>
           </li>
           <li>
             <NavLink to={"/places/new"}>ADD PLACE</NavLink>

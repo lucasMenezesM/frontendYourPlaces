@@ -1,60 +1,30 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Form, Formik } from "formik";
-// import * as Yup from "yup";
 import * as Yup from "yup";
-// import Input from "../../shared/components/FormEelements/Input.jsx";
+import axios from "axios";
+
 import Input from "../../shared/components/FormEelements/Input.jsx";
 import Button from "../../shared/components/FormEelements/Button";
 import "./NewPlace.css";
-
-// export default function NewPlaces() {
-//   const [title, setTitle] = useState("");
-//   const [address, setAddress] = useState("");
-//   const [description, setDescription] = useState("");
-//   const [image, setImage] = useState("");
-
-//   function handleFormSubmit(e) {
-//     e.preventDefault();
-//     const newPlace = {
-//       title,
-//       description,
-//       address,
-//       image,
-//     };
-//     console.log(newPlace);
-//   }
-//   return (
-//     <form onSubmit={handleFormSubmit} className="place-form">
-//       <Input
-//         element={"input"}
-//         type={"text"}
-//         label={"title"}
-//         value={title}
-//         setValue={setTitle}
-//       />
-
-//       <Input
-//         element={"input"}
-//         type={"text"}
-//         label={"Address"}
-//         value={address}
-//         setValue={setAddress}
-//       />
-
-//       <Input
-//         element={"textarea"}
-//         type={"text"}
-//         label={"Description"}
-//         value={description}
-//         setValue={setDescription}
-//       />
-
-//       <Button>Send</Button>
-//     </form>
-//   );
-// }
+import { AuthContext } from "../../shared/context/auth-context.js";
+import { useNavigate } from "react-router-dom";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal.js";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner.js";
 
 export default function NewPlace() {
+  const auth = useContext(AuthContext);
+
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+  console.log(`Current user: ${auth.userId}`);
+
+  useEffect(() => {
+    if (!auth.isLoggedIn) {
+      return navigate("/");
+    }
+  }, [navigate, auth]);
+
   return (
     <div>
       <Formik
@@ -68,18 +38,51 @@ export default function NewPlace() {
             .min(5, "Must have at least 5 characters")
             .required("This field is required"),
         })}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log(JSON.stringify(values));
-          alert("submitted");
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            setIsLoading(true);
+            const response = await axios.post(
+              "http://localhost:5000/api/places/",
+              {
+                title: values.title,
+                description: values.description,
+                address: values.address,
+                user_id: auth.userId,
+              }
+            );
+            // if (!response.ok) {
+            //   throw Error("Deu erro aqui mané");
+            // }
+            console.log(response.data);
+            setIsLoading(false);
+            navigate("/");
+          } catch (err) {
+            console.log(err);
+            setError(err.response.data.message);
+            setIsLoading(false);
+          }
           setSubmitting(false);
         }}
       >
-        <Form className="place-form">
-          <Input name={"title"} label={"Enter the place's title"} />
-          <Input name={"description"} label={"Enter the place's description"} />
-          <Input name={"address"} label={"Enter the place's address"} />
-          <Button type="submit">SEND</Button>
-        </Form>
+        <>
+          <ErrorModal
+            error={error}
+            onClear={() => {
+              setError(null);
+            }}
+          />
+
+          <Form className="place-form">
+            {isLoading && <LoadingSpinner asOverLay />}
+            <Input name={"title"} label={"Enter the place's title"} />
+            <Input
+              name={"description"}
+              label={"Enter the place's description"}
+            />
+            <Input name={"address"} label={"Enter the place's address"} />
+            <Button type="submit">SEND</Button>
+          </Form>
+        </>
       </Formik>
     </div>
   );
