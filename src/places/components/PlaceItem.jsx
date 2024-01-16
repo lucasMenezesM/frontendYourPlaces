@@ -11,7 +11,7 @@ import "./PlaceItem.css";
 import { useState } from "react";
 
 export default function PlaceItem({ place }) {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, userId } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [showMap, setShowMap] = useState(false);
@@ -94,7 +94,10 @@ export default function PlaceItem({ place }) {
       <li className="place-item">
         <Card className="place-item__content">
           <div className="place-item__image">
-            <img src={place.image} alt={place.title} />
+            <img
+              src={`http://localhost:5000/${place.image}`}
+              alt={place.title}
+            />
           </div>
 
           <div className="place-item__info">
@@ -107,7 +110,7 @@ export default function PlaceItem({ place }) {
             <Button inverse onClick={handleShowMap}>
               VIEW ON MAP
             </Button>
-            {isLoggedIn && (
+            {place.user_id === userId && (
               <>
                 <Button to={`/places/${place.id}`}>EDIT</Button>{" "}
                 <Button danger onClick={handleShowDeleteWarning}>

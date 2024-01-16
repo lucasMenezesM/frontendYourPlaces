@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Form, Formik } from "formik";
+import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
@@ -28,9 +28,10 @@ export default function NewPlace() {
   return (
     <div>
       <Formik
-        initialValues={{ title: "", description: "", address: "" }}
+        initialValues={{ title: "", description: "", address: "", image: null }}
         validationSchema={Yup.object({
           title: Yup.string().required("This field is required"),
+          image: Yup.mixed().required("Image is required."),
           description: Yup.string()
             .min(5, "Must have at least 5 characters")
             .required("This field is required"),
@@ -39,20 +40,20 @@ export default function NewPlace() {
             .required("This field is required"),
         })}
         onSubmit={async (values, { setSubmitting }) => {
+          const formData = new FormData();
+
+          formData.append("title", values.title);
+          formData.append("description", values.description);
+          formData.append("address", values.address);
+          formData.append("user_id", auth.userId);
+          formData.append("image", values.image);
+
           try {
             setIsLoading(true);
-            const response = await axios.post(
-              "http://localhost:5000/api/places/",
-              {
-                title: values.title,
-                description: values.description,
-                address: values.address,
-                user_id: auth.userId,
-              }
-            );
-            // if (!response.ok) {
-            //   throw Error("Deu erro aqui mané");
-            // }
+
+            //prettier-ignore
+            const response = await axios.post("http://localhost:5000/api/places/", formData);
+
             console.log(response.data);
             setIsLoading(false);
             navigate("/");
@@ -75,6 +76,21 @@ export default function NewPlace() {
           <Form className="place-form">
             {isLoading && <LoadingSpinner asOverLay />}
             <Input name={"title"} label={"Enter the place's title"} />
+
+            <Field name="image">
+              {({ field, form }) => (
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  onChange={(event) => {
+                    const file = event.currentTarget.files[0];
+                    form.setFieldValue("image", file);
+                  }}
+                />
+              )}
+            </Field>
+
             <Input
               name={"description"}
               label={"Enter the place's description"}

@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 
 import { useNavigate } from "react-router-dom";
-import { Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
@@ -28,27 +28,30 @@ export default function Auth() {
   if (!isLoginMode)
     return (
       <Formik
-        initialValues={{ name: "", email: "", password: "" }}
+        initialValues={{ name: "", email: "", password: "", image: null }}
         validationSchema={Yup.object({
           name: Yup.string().required("This filed is required"),
+          image: Yup.mixed().required("Image is required"),
           email: Yup.string()
             .email("Type a valid email")
             .required("This field is required"),
           password: Yup.string()
-            .min(5, "Must have at least 5 characters")
+            .min(6, "Must have at least 6 characters")
             .required("This field is required"),
         })}
         onSubmit={async (values, { setSubmitting }) => {
+          console.log(values);
           try {
             setIsLoading(true);
-            const response = await axios.post(
-              "http://localhost:5000/api/users/signup",
-              {
-                name: values.name,
-                email: values.email,
-                password: values.password,
-              }
-            );
+
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("email", values.email);
+            formData.append("password", values.password);
+            formData.append("image", values.image);
+
+            //prettier-ignore
+            const response = await axios.post("http://localhost:5000/api/users/signup", formData );
 
             console.log(response.data);
             setIsLoading(false);
@@ -76,6 +79,22 @@ export default function Auth() {
             <Form>
               <div className="form-control">
                 <Input name={"name"} label={"Enter your name"} />
+
+                <Field name="image">
+                  {({ field, form }) => (
+                    <input
+                      type="file"
+                      id="image"
+                      name="image"
+                      onChange={(event) => {
+                        const file = event.currentTarget.files[0];
+                        form.setFieldValue("image", file);
+                      }}
+                    />
+                  )}
+                </Field>
+
+                {/* <ImageUpload name="image" type="file" /> */}
                 <Input name={"email"} label={"Enter your email"} />
                 <Input
                   name={"password"}
