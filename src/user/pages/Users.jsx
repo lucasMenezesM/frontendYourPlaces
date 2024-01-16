@@ -26,7 +26,6 @@ export default function Users() {
         setIsLoading(true);
         const response = await axios.get("http://localhost:5000/api/users/");
         setUsers(response.data.users);
-        console.log(response.data.users);
       } catch (err) {
         setError(err.message);
         console.log(err);

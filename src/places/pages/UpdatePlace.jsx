@@ -4,6 +4,13 @@ import Input from "../../shared/components/FormEelements/Input";
 import Button from "../../shared/components/FormEelements/Button";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import { useContext } from "react";
+import { AuthContext } from "../../shared/context/auth-context";
 const DUMMY_PLACES = [
   {
     id: "p1",
@@ -35,92 +42,94 @@ const DUMMY_PLACES = [
   },
 ];
 
-// export default function UpdatePlace() {
-//   const { placeId } = useParams();
-//   const identifiedPlace = DUMMY_PLACES.find((place) => place.id === placeId);
-
-//   const [title, setTitle] = useState(identifiedPlace?.title);
-//   //   const [address, setAddress] = useState(identifiedPlace.address);
-//   const [description, setDescription] = useState(identifiedPlace?.description);
-//   //   const [image, setImage] = useState(identifiedPlace.image);
-
-//   function handleFormSubmit(e) {
-//     e.preventDefault();
-//     const updatedPlace = {
-//       ...identifiedPlace,
-//       description: description,
-//       title: title,
-//     };
-//     console.log(updatedPlace);
-//   }
-
-//   if (!identifiedPlace)
-//     return (
-//       <div className="center">
-//         <Card>
-//           <h2>Could not find any place!</h2>
-//         </Card>
-//       </div>
-//     );
-
-//   return (
-//     <div>
-//       <form className="place-form" onSubmit={handleFormSubmit}>
-//         <Input
-//           value={title}
-//           type={"text"}
-//           element={"input"}
-//           label={"title"}
-//           setValue={setTitle}
-//         />
-
-//         <Input
-//           value={description}
-//           type={"text"}
-//           element={"input"}
-//           label={"Address"}
-//           setValue={setDescription}
-//         />
-
-//         <Button disabled={!(title.length > 0 && description.length > 0)}>
-//           Update Place
-//         </Button>
-//       </form>
-//     </div>
-//   );
-// }
-
 export default function UpdatePlace() {
   const { placeId } = useParams();
-  const identifiedPlace = DUMMY_PLACES.find((place) => place.id === placeId);
-  console.log(identifiedPlace);
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [updatedPlace, setUpdatedPlace] = useState();
+  const [initialPlaceValues, setInitialPlaceValues] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    async function getPlace() {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `http://localhost:5000/api/places/${placeId}`
+        );
+
+        const placeUpdated = response.data.place;
+
+        setUpdatedPlace(placeUpdated);
+
+        setInitialPlaceValues({
+          title: placeUpdated.title,
+          description: placeUpdated.description,
+        });
+
+        setIsLoading(false);
+      } catch (err) {
+        setError(
+          err.response.data.message || "Something went wrong. Try Again Later"
+        );
+        console.log(err);
+        setIsLoading(false);
+      }
+    }
+    getPlace();
+  }, [placeId, navigate]);
+
   return (
     <div>
-      <Formik
-        initialValues={{
-          title: identifiedPlace.title,
-          description: identifiedPlace.description,
-        }}
-        validationSchema={Yup.object({
-          title: Yup.string().required("This field is required"),
-          description: Yup.string()
-            .min(5, "Must have at least 5 characters")
-            .required("This field is required"),
-        })}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log(JSON.stringify(values));
-          setSubmitting(false);
-        }}
-      >
-        <Form className="place-form">
-          <Input name={"title"} label={"Update the place's title"} />
-          <Input
-            name={"description"}
-            label={"Update the place's description"}
-          />
-          <Button type="submit">UPDATE PLACE</Button>
-        </Form>
-      </Formik>
+      {error && (
+        <ErrorModal
+          error={error}
+          onClear={() => {
+            setError(null);
+          }}
+        />
+      )}
+      {!isLoading ? (
+        <Formik
+          initialValues={initialPlaceValues}
+          validationSchema={Yup.object({
+            title: Yup.string().required("This field is required"),
+            description: Yup.string()
+              .min(5, "Must have at least 5 characters")
+              .required("This field is required"),
+          })}
+          onSubmit={async (values, { setSubmitting }) => {
+            try {
+              setIsLoading(true);
+              const response = await axios.patch(
+                `http://localhost:5000/api/places/${placeId}`,
+                { title: values.title, description: values.description }
+              );
+              setIsLoading(false);
+              navigate(`/${auth.userId}/places`);
+            } catch (err) {
+              console.log(err);
+              setError(
+                err.response.data.message ||
+                  "Something Went Wrong, Try Again Later."
+              );
+            }
+            setSubmitting(false);
+          }}
+        >
+          <Form className="place-form">
+            <Input name={"title"} label={"Update the place's title"} />
+            <Input
+              name={"description"}
+              label={"Update the place's description"}
+            />
+            <Button type="submit">UPDATE PLACE</Button>
+          </Form>
+        </Formik>
+      ) : (
+        <LoadingSpinner asOverlay />
+      )}
     </div>
   );
 }

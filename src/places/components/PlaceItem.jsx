@@ -1,4 +1,6 @@
 import { useContext } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../shared/context/auth-context";
 // import Card from "../../shared/components/UIElements/Card";
 import Card from "../../shared/components/UIElements/Card";
@@ -10,6 +12,7 @@ import { useState } from "react";
 
 export default function PlaceItem({ place }) {
   const { isLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -20,8 +23,20 @@ export default function PlaceItem({ place }) {
   const handleShowDeleteWarning = () => setShowConfirmModal(true);
   const handleCancelDeleteWarning = () => setShowConfirmModal(false);
 
-  const handleDeletePlace = () => {
+  const handleDeletePlace = async () => {
     console.log("deleting...");
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/places/${place.id}`
+      );
+      console.log(response.data);
+      navigate("/");
+    } catch (err) {
+      console.log(
+        err.response.data.message || "Something went wrong, try again later."
+      );
+    }
     setShowConfirmModal(false);
   };
 
