@@ -11,7 +11,7 @@ import "./PlaceItem.css";
 import { useState } from "react";
 
 export default function PlaceItem({ place }) {
-  const { isLoggedIn, userId } = useContext(AuthContext);
+  const { isLoggedIn, userId, token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [showMap, setShowMap] = useState(false);
@@ -27,8 +27,9 @@ export default function PlaceItem({ place }) {
     console.log("deleting...");
 
     try {
+      //prettier-ignore
       const response = await axios.delete(
-        `http://localhost:5000/api/places/${place.id}`
+        `http://localhost:5000/api/places/${place.id}`, {headers: {'authorization': 'Bearer '+ token}}
       );
       console.log(response.data);
       navigate("/");

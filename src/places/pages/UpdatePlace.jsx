@@ -104,7 +104,8 @@ export default function UpdatePlace() {
               setIsLoading(true);
               const response = await axios.patch(
                 `http://localhost:5000/api/places/${placeId}`,
-                { title: values.title, description: values.description }
+                { title: values.title, description: values.description },
+                { headers: { Authorization: "Bearer " + auth.token } }
               );
               setIsLoading(false);
               navigate(`/${auth.userId}/places`);

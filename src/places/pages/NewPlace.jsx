@@ -52,7 +52,7 @@ export default function NewPlace() {
             setIsLoading(true);
 
             //prettier-ignore
-            const response = await axios.post("http://localhost:5000/api/places/", formData);
+            const response = await axios.post("http://localhost:5000/api/places/", formData, {headers: {'Authorization': 'Bearer '+auth.token}});
 
             console.log(response.data);
             setIsLoading(false);
@@ -74,7 +74,7 @@ export default function NewPlace() {
           />
 
           <Form className="place-form">
-            {isLoading && <LoadingSpinner asOverLay />}
+            {isLoading && <LoadingSpinner asOverlay />}
             <Input name={"title"} label={"Enter the place's title"} />
 
             <Field name="image">

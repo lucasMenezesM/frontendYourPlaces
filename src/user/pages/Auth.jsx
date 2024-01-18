@@ -53,14 +53,15 @@ export default function Auth() {
             //prettier-ignore
             const response = await axios.post("http://localhost:5000/api/users/signup", formData );
 
-            console.log(response.data);
+            console.log(response);
             setIsLoading(false);
-            auth.login(response.data.user.id);
+
+            auth.login(response.data.userId, response.data.token);
             navigate("/");
           } catch (err) {
             //prettier-ignore
             setError(err.response.data.message || "Something went wrong, please try again later.");
-            console.log(err.response);
+            console.log(err);
             setIsLoading(false);
           }
 
@@ -136,9 +137,9 @@ export default function Auth() {
             }
           );
 
-          console.log(response.data.user);
+          console.log(response);
           setIsLoading(false);
-          auth.login(response.data.user.id);
+          auth.login(response.data.userId, response.data.token);
           navigate("/");
         } catch (err) {
           setIsLoading(false);
