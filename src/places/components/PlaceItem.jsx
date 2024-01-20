@@ -1,17 +1,16 @@
-import { useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../shared/context/auth-context";
-// import Card from "../../shared/components/UIElements/Card";
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormEelements/Button";
 import Modal from "../../shared/components/UIElements/Modal";
+import useAuth from "../../shared/hooks/auth";
 
 import "./PlaceItem.css";
 import { useState } from "react";
 
 export default function PlaceItem({ place }) {
-  const { isLoggedIn, userId, token } = useContext(AuthContext);
+  const { token, userId } = useAuth();
+
   const navigate = useNavigate();
 
   const [showMap, setShowMap] = useState(false);
@@ -28,15 +27,12 @@ export default function PlaceItem({ place }) {
 
     try {
       //prettier-ignore
-      const response = await axios.delete(
-        `http://localhost:5000/api/places/${place.id}`, {headers: {'authorization': 'Bearer '+ token}}
-      );
+      const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}places/${place.id}`, {headers: {'Authorization': "Bearer "+token}, data: {currentUserId: userId}});
+
       console.log(response.data);
       navigate("/");
     } catch (err) {
-      console.log(
-        err.response.data.message || "Something went wrong, try again later."
-      );
+      console.log(err);
     }
     setShowConfirmModal(false);
   };
@@ -96,7 +92,8 @@ export default function PlaceItem({ place }) {
         <Card className="place-item__content">
           <div className="place-item__image">
             <img
-              src={`http://localhost:5000/${place.image}`}
+              src={process.env.REACT_APP_BACKEND_ASSET_URL + `${place.image}`}
+              // src={process.env.REACT_APP_ASSET_URL + place.image}
               alt={place.title}
             />
           </div>
@@ -111,7 +108,7 @@ export default function PlaceItem({ place }) {
             <Button inverse onClick={handleShowMap}>
               VIEW ON MAP
             </Button>
-            {place.user_id === userId && (
+            {userId && place.user_id === userId && (
               <>
                 <Button to={`/places/${place.id}`}>EDIT</Button>{" "}
                 <Button danger onClick={handleShowDeleteWarning}>

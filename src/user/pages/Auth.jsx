@@ -1,3 +1,4 @@
+// import { useState, useContext } from "react";
 import { useState, useContext } from "react";
 
 import { useNavigate } from "react-router-dom";
@@ -11,12 +12,14 @@ import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormEelements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import useAuth from "../../shared/hooks/auth";
 
 import "./Auth.css";
 
 export default function Auth() {
+  const { login } = useAuth();
+
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
@@ -51,12 +54,17 @@ export default function Auth() {
             formData.append("image", values.image);
 
             //prettier-ignore
-            const response = await axios.post("http://localhost:5000/api/users/signup", formData );
+            const response = await axios.post(process.env.REACT_APP_BACKEND_URL+"users/signup", formData );
 
             console.log(response);
             setIsLoading(false);
 
-            auth.login(response.data.userId, response.data.token);
+            // auth.login(response.data.userId, response.data.token);
+            login(
+              response.data.token,
+              response.data.userId,
+              new Date().getTime() + 1 * 60 * 60 * 1000
+            );
             navigate("/");
           } catch (err) {
             //prettier-ignore
@@ -130,7 +138,7 @@ export default function Auth() {
         try {
           setIsLoading(true);
           const response = await axios.post(
-            "http://localhost:5000/api/users/login",
+            process.env.REACT_APP_BACKEND_URL + "users/login",
             {
               email: values.email,
               password: values.password,
@@ -139,7 +147,12 @@ export default function Auth() {
 
           console.log(response);
           setIsLoading(false);
-          auth.login(response.data.userId, response.data.token);
+          //auth.login(response.data.userId, response.data.token);
+          login(
+            response.data.token,
+            response.data.userId,
+            new Date().getTime() + 1 * 60 * 60 * 1000
+          );
           navigate("/");
         } catch (err) {
           setIsLoading(false);

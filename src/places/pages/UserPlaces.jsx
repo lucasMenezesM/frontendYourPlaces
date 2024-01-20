@@ -17,7 +17,7 @@ export default function UserPlaces() {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `http://localhost:5000/api/places/user/${userId}`
+          `${process.env.REACT_APP_BACKEND_URL}places/user/${userId}`
         );
         setPlaces(response.data.places);
         setIsLoading(false);

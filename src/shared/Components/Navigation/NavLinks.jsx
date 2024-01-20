@@ -2,11 +2,13 @@ import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/auth-context";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/auth";
 
 import "./NavLinks.css";
 
 export default function NavLinks() {
-  const { isLoggedIn, logout, userId } = useContext(AuthContext);
+  // const { isLoggedIn, logout, userId } = useContext(AuthContext);
+  const { token, logout, userId } = useAuth();
   const navigate = useNavigate();
 
   function handleLogOut() {
@@ -19,7 +21,7 @@ export default function NavLinks() {
       <li>
         <NavLink to={"/home"}>ALL USERS</NavLink>
       </li>
-      {isLoggedIn && (
+      {token && (
         <>
           <li>
             <NavLink to={`/${userId}/places`}>MY PLACES</NavLink>
@@ -32,7 +34,7 @@ export default function NavLinks() {
           </li>
         </>
       )}
-      {!isLoggedIn && (
+      {!token && (
         <li>
           <NavLink to={"/auth"}>AUTHENTICATE</NavLink>
         </li>

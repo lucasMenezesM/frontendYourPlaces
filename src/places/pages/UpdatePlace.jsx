@@ -11,42 +11,12 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { useContext } from "react";
 import { AuthContext } from "../../shared/context/auth-context";
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Maracana",
-    description: "Um estádio legalzinho até",
-    image:
-      "https://prefeitura.rio/wp-content/uploads/2022/05/52096569354_389578c97a_w.jpg",
-    address:
-      "Av. Pres. Castelo Branco, Portão 3 - Maracanã, Rio de Janeiro - RJ, 20271-130",
-    coordinates: {
-      lat: "-22.9121089",
-      lng: "-43.2327307",
-    },
-    user_id: "u1",
-  },
-  {
-    id: "p2",
-    title: "Maracana 2",
-    description: "Um estádio legalzinho até",
-    image:
-      "https://prefeitura.rio/wp-content/uploads/2022/05/52096569354_389578c97a_w.jpg",
-    address:
-      "Av. Pres. Castelo Branco, Portão 3 - Maracanã, Rio de Janeiro - RJ, 20271-130",
-    coordinates: {
-      lat: "-22.9121089",
-      lng: "-43.2327307",
-    },
-    user_id: "u2",
-  },
-];
+import useAuth from "../../shared/hooks/auth";
 
 export default function UpdatePlace() {
+  const { token, userId } = useAuth();
   const { placeId } = useParams();
-  const auth = useContext(AuthContext);
   const navigate = useNavigate();
-  const [updatedPlace, setUpdatedPlace] = useState();
   const [initialPlaceValues, setInitialPlaceValues] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
@@ -56,12 +26,10 @@ export default function UpdatePlace() {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `http://localhost:5000/api/places/${placeId}`
+          `${process.env.REACT_APP_BACKEND_URL}places/${placeId}`
         );
 
         const placeUpdated = response.data.place;
-
-        setUpdatedPlace(placeUpdated);
 
         setInitialPlaceValues({
           title: placeUpdated.title,
@@ -103,12 +71,12 @@ export default function UpdatePlace() {
             try {
               setIsLoading(true);
               const response = await axios.patch(
-                `http://localhost:5000/api/places/${placeId}`,
+                `${process.env.REACT_APP_BACKEND_URL}places/${placeId}`,
                 { title: values.title, description: values.description },
-                { headers: { Authorization: "Bearer " + auth.token } }
+                { headers: { Authorization: "Bearer " + token } }
               );
               setIsLoading(false);
-              navigate(`/${auth.userId}/places`);
+              navigate(`/${userId}/places`);
             } catch (err) {
               console.log(err);
               setError(

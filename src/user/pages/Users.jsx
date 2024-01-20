@@ -6,15 +6,6 @@ import UserList from "../components/UserList";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
-const DUMMY_USERS = [
-  {
-    id: "u1",
-    name: "lucas",
-    image:
-      "https://img2.storyblok.com/1920x1200/filters:quality(88):focal(960x600:961x601)/f/102671/1920x1200/a5d82b8cff/ca_van_skyline_water_trees.jpg",
-    places: 3,
-  },
-];
 export default function Users() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
@@ -24,7 +15,9 @@ export default function Users() {
     async function getUsers() {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:5000/api/users/");
+        const response = await axios.get(
+          process.env.REACT_APP_BACKEND_URL + "users/"
+        );
         setUsers(response.data.users);
       } catch (err) {
         setError(err.message);

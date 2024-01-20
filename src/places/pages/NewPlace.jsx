@@ -10,20 +10,20 @@ import { AuthContext } from "../../shared/context/auth-context.js";
 import { useNavigate } from "react-router-dom";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal.js";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner.js";
+import useAuth from "../../shared/hooks/auth.js";
 
 export default function NewPlace() {
-  const auth = useContext(AuthContext);
+  const { userId, token } = useAuth();
 
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  console.log(`Current user: ${auth.userId}`);
 
-  useEffect(() => {
-    if (!auth.isLoggedIn) {
-      return navigate("/");
-    }
-  }, [navigate, auth]);
+  // useEffect(() => {
+  //   if (!auth.isLoggedIn) {
+  //     return navigate("/");
+  //   }
+  // }, [navigate, auth]);
 
   return (
     <div>
@@ -45,14 +45,14 @@ export default function NewPlace() {
           formData.append("title", values.title);
           formData.append("description", values.description);
           formData.append("address", values.address);
-          formData.append("user_id", auth.userId);
+          formData.append("user_id", userId);
           formData.append("image", values.image);
 
           try {
             setIsLoading(true);
 
             //prettier-ignore
-            const response = await axios.post("http://localhost:5000/api/places/", formData, {headers: {'Authorization': 'Bearer '+auth.token}});
+            const response = await axios.post(process.env.REACT_APP_BACKEND_URL+"places/", formData, {headers: {'Authorization': "Bearer "+token}});
 
             console.log(response.data);
             setIsLoading(false);
